@@ -61,6 +61,16 @@ const ChipSelect = ({
   </div>
 );
 
+const CTAButton = ({ onClick, disabled, children }: { onClick: () => void; disabled?: boolean; children: React.ReactNode }) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-medium text-base hover:opacity-90 transition-opacity disabled:opacity-40"
+  >
+    {children}
+  </button>
+);
+
 export default function MindfulActivity() {
   const [screen, setScreen] = useState(0);
   const [thought, setThought] = useState("");
@@ -68,6 +78,7 @@ export default function MindfulActivity() {
   const [feelingOther, setFeelingOther] = useState("");
   const [selectedActions, setSelectedActions] = useState<string[]>([]);
   const [actionOther, setActionOther] = useState("");
+  const [evidence, setEvidence] = useState("");
   const [reframe, setReframe] = useState("");
   const [finished, setFinished] = useState(false);
 
@@ -76,10 +87,22 @@ export default function MindfulActivity() {
 
   const next = () => setScreen((s) => s + 1);
 
+  const reset = () => {
+    setScreen(0);
+    setThought("");
+    setSelectedFeelings([]);
+    setFeelingOther("");
+    setSelectedActions([]);
+    setActionOther("");
+    setEvidence("");
+    setReframe("");
+    setFinished(false);
+  };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-lg">
-        <ProgressDots current={screen} total={4} />
+        <ProgressDots current={screen} total={5} />
 
         <AnimatePresence mode="wait">
           {screen === 0 && (
@@ -87,7 +110,6 @@ export default function MindfulActivity() {
               <h1 className="text-3xl md:text-4xl font-heading text-foreground leading-tight">
                 Notice → Understand → Reframe
               </h1>
-
               <div className="space-y-4 text-foreground/80 leading-relaxed text-[15px]">
                 <p>
                   Sometimes it's not just a situation that affects us —<br />
@@ -114,10 +136,7 @@ export default function MindfulActivity() {
                   There are no right or wrong answers.
                 </p>
               </div>
-
-              <button onClick={next} className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-medium text-base hover:opacity-90 transition-opacity">
-                Start
-              </button>
+              <CTAButton onClick={next}>Start</CTAButton>
             </motion.div>
           )}
 
@@ -133,7 +152,6 @@ export default function MindfulActivity() {
                 </p>
                 <p>Write it in one sentence.</p>
               </div>
-
               <div className="space-y-2">
                 <input
                   type="text"
@@ -144,14 +162,7 @@ export default function MindfulActivity() {
                 />
                 <p className="text-xs text-muted-foreground ml-1">Just notice it. No judgment.</p>
               </div>
-
-              <button
-                onClick={next}
-                disabled={!thought.trim()}
-                className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-medium text-base hover:opacity-90 transition-opacity disabled:opacity-40"
-              >
-                Continue
-              </button>
+              <CTAButton onClick={next} disabled={!thought.trim()}>Continue</CTAButton>
             </motion.div>
           )}
 
@@ -159,7 +170,6 @@ export default function MindfulActivity() {
             <motion.div key="s2" {...fadeVariants} className="space-y-6">
               <h1 className="text-3xl font-heading text-foreground">How Does This Thought Affect You?</h1>
               <p className="text-foreground/80 text-[15px]">When you think this thought:</p>
-
               <div className="space-y-2">
                 <p className="text-sm font-medium text-foreground">How do you usually feel?</p>
                 <ChipSelect
@@ -170,7 +180,6 @@ export default function MindfulActivity() {
                   onOtherChange={setFeelingOther}
                 />
               </div>
-
               <div className="space-y-2">
                 <p className="text-sm font-medium text-foreground">What do you usually do next?</p>
                 <ChipSelect
@@ -181,7 +190,6 @@ export default function MindfulActivity() {
                   onOtherChange={setActionOther}
                 />
               </div>
-
               <div className="bg-accent/50 rounded-xl p-4 space-y-1">
                 <p className="text-sm font-medium text-accent-foreground">Thought → Feeling → Action</p>
                 <p className="text-xs text-muted-foreground">
@@ -189,30 +197,62 @@ export default function MindfulActivity() {
                   Awareness creates space.
                 </p>
               </div>
-
-              <button
-                onClick={next}
-                disabled={selectedFeelings.length === 0 && !feelingOther}
-                className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-medium text-base hover:opacity-90 transition-opacity disabled:opacity-40"
-              >
-                Reframe
-              </button>
+              <CTAButton onClick={next} disabled={selectedFeelings.length === 0 && !feelingOther}>Continue</CTAButton>
             </motion.div>
           )}
 
           {screen === 3 && (
             <motion.div key="s3" {...fadeVariants} className="space-y-6">
+              <h1 className="text-3xl font-heading text-foreground">What Supports This Thought?</h1>
+              <div className="space-y-4 text-foreground/80 leading-relaxed text-[15px]">
+                <p>Sometimes our thoughts feel completely true.</p>
+                <p>Before adjusting it, take a moment to look at the evidence.</p>
+                <p>Ask yourself:</p>
+                <p className="italic text-foreground/70">
+                  What experiences, facts, or memories make this thought feel valid?
+                </p>
+                <p>
+                  You don't need to prove it wrong.<br />
+                  Just gently explore what supports it.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  value={evidence}
+                  onChange={(e) => setEvidence(e.target.value)}
+                  placeholder="e.g. I missed two deadlines last month."
+                  className="w-full px-4 py-3.5 rounded-xl border border-border bg-card text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 text-[15px]"
+                />
+                <p className="text-xs text-muted-foreground ml-1">Be specific. Even small examples count.</p>
+              </div>
+              <div className="bg-accent/50 rounded-xl p-4">
+                <p className="text-xs text-muted-foreground">
+                  Looking at evidence helps you step back from automatic conclusions.
+                </p>
+              </div>
+              <CTAButton onClick={next} disabled={!evidence.trim()}>Reframe</CTAButton>
+            </motion.div>
+          )}
+
+          {screen === 4 && (
+            <motion.div key="s4" {...fadeVariants} className="space-y-6">
               {!finished ? (
                 <>
                   <h1 className="text-3xl font-heading text-foreground">Adjust the Thought</h1>
                   <div className="space-y-3 text-foreground/80 leading-relaxed text-[15px]">
-                    <p>Now that you see how this thought affects you, try rewriting it in a more balanced way.</p>
+                    <p>Now that you see how this thought affects you — and what supports it — try rewriting it in a more balanced way.</p>
                     <p>
                       Not overly positive.<br />
                       Just realistic and fair.
                     </p>
+                    <p>A balanced thought often:</p>
+                    <ul className="space-y-1 ml-1">
+                      <li className="flex items-start gap-2"><span className="text-primary mt-1">•</span>Acknowledges what's true</li>
+                      <li className="flex items-start gap-2"><span className="text-primary mt-1">•</span>Leaves room for flexibility</li>
+                      <li className="flex items-start gap-2"><span className="text-primary mt-1">•</span>Reduces harsh language like "always" or "never"</li>
+                    </ul>
                   </div>
-
                   <div className="space-y-2">
                     <input
                       type="text"
@@ -226,63 +266,35 @@ export default function MindfulActivity() {
                       Try: "I made a mistake, but I can correct it."
                     </p>
                   </div>
-
-                  <button
-                    onClick={() => setFinished(true)}
-                    disabled={!reframe.trim()}
-                    className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-medium text-base hover:opacity-90 transition-opacity disabled:opacity-40"
-                  >
-                    Submit
-                  </button>
+                  <CTAButton onClick={() => setFinished(true)} disabled={!reframe.trim()}>Submit</CTAButton>
                 </>
               ) : (
                 <motion.div {...fadeVariants} className="space-y-5">
                   <div className="space-y-4 text-foreground/80 leading-relaxed text-[15px]">
                     <p className="text-muted-foreground italic">Take a slow breath before you leave this screen.</p>
-
                     <p>
                       The thought you wrote down may still exist — and that's okay.<br />
                       The goal was never to eliminate it.
                     </p>
-
                     <p>What you just practiced is something powerful:</p>
-
                     <ul className="space-y-1.5 ml-1">
                       <li className="flex items-start gap-2"><span className="text-primary">—</span>You paused.</li>
                       <li className="flex items-start gap-2"><span className="text-primary">—</span>You looked at the thought instead of automatically believing it.</li>
+                      <li className="flex items-start gap-2"><span className="text-primary">—</span>You explored what supports it.</li>
                       <li className="flex items-start gap-2"><span className="text-primary">—</span>You understood how it was affecting you.</li>
                       <li className="flex items-start gap-2"><span className="text-primary">—</span>And you chose to respond differently.</li>
                     </ul>
-
                     <p>That creates space.</p>
-
                     <p>
                       Over time, even small moments of awareness like this can reduce overthinking, soften self-criticism, and make actions feel more manageable.
                     </p>
-
                     <p>
                       You don't have to change every thought.<br />
                       You only need to notice them — one at a time.
                     </p>
-
                     <p className="font-medium text-foreground">You did that today.</p>
                   </div>
-
-                  <button
-                    onClick={() => {
-                      setScreen(0);
-                      setThought("");
-                      setSelectedFeelings([]);
-                      setFeelingOther("");
-                      setSelectedActions([]);
-                      setActionOther("");
-                      setReframe("");
-                      setFinished(false);
-                    }}
-                    className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-medium text-base hover:opacity-90 transition-opacity"
-                  >
-                    Finish
-                  </button>
+                  <CTAButton onClick={reset}>Finish</CTAButton>
                 </motion.div>
               )}
             </motion.div>
