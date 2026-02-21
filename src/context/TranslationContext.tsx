@@ -13,6 +13,8 @@ export const MAJOR_LOCALES = [
     { code: "pt", name: "Português" },
     { code: "it", name: "Italiano" },
     { code: "ru", name: "Русский" },
+    { code: "ar", name: "العربية" },
+    { code: "bn", name: "বাংলা" },
 ];
 
 type TranslationContextType = {
