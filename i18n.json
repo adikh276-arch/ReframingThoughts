@@ -1,18 +1,11 @@
 {
-    "sourceLocale": "en",
-    "targetLocales": [
-        "es",
-        "fr",
-        "de",
-        "hi",
-        "zh",
-        "ja",
-        "ko",
-        "pt",
-        "it",
-        "ru",
-        "ar",
-        "bn"
-    ],
-    "locales": "src/locales/[locale].json"
+  "version": "1.12",
+  "locale": {
+    "source": "en",
+    "targets": [
+      "es"
+    ]
+  },
+  "buckets": {},
+  "$schema": "https://lingo.dev/schema/i18n.json"
 }
