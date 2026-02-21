@@ -1,0 +1,18 @@
+{
+    "sourceLocale": "en",
+    "targetLocales": [
+        "es",
+        "fr",
+        "de",
+        "hi",
+        "zh",
+        "ja",
+        "ko",
+        "pt",
+        "it",
+        "ru",
+        "ar",
+        "bn"
+    ],
+    "locales": "src/locales/[locale].json"
+}

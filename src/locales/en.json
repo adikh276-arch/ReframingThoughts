@@ -1,0 +1,40 @@
+{
+    "app": {
+        "title": "Notice → Understand → Reframe",
+        "intro_p1": "Sometimes it's not just a situation that affects us —",
+        "intro_p2": "it's the thought we have about it.",
+        "influence_title": "Our thoughts can quietly influence:",
+        "influence_feel": "How we feel",
+        "influence_do": "What we do next",
+        "influence_action": "Whether we avoid or take action",
+        "help_title": "This short activity will help you:",
+        "help_step1": "Notice one thought",
+        "help_step2": "Understand how it affects you",
+        "help_step3": "Adjust it in a balanced way",
+        "positivity_note": "This is not about forcing positivity.",
+        "clarity_note": "It's about gaining clarity and choice.",
+        "time_req": "Time required: 4–6 minutes",
+        "no_wrong_answers": "There are no right or wrong answers.",
+        "start": "Start",
+        "continue": "Continue",
+        "submit": "Submit",
+        "finish": "Finish",
+        "reframe": "Reframe"
+    },
+    "feelings": {
+        "Anxious": "Anxious",
+        "Low": "Low",
+        "Frustrated": "Frustrated",
+        "Ashamed": "Ashamed",
+        "Overwhelmed": "Overwhelmed",
+        "Neutral": "Neutral"
+    },
+    "actions": {
+        "Avoid the task": "Avoid the task",
+        "Overthink": "Overthink",
+        "Procrastinate": "Procrastinate",
+        "Work harder than needed": "Work harder than needed",
+        "Shut down": "Shut down",
+        "Nothing changes": "Nothing changes"
+    }
+}

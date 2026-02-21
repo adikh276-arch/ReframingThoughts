@@ -31,6 +31,6 @@ jobs:
           tags: bunker.mantracare.com/lovable/reframing-thoughts:1.0
           platforms: linux/amd64
           build-args: |
-            VITE_LINGODOTDEV_API_KEY=${{ secrets.VITE_LINGODOTDEV_API_KEY }}
+            VITE_LINGODOTDEV_API_KEY=${{ secrets.LINGODOTDEV_API_KEY }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
