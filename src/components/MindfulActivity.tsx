@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { T, useTranslation } from "@/context/TranslationContext";
+import LanguageSwitcher from "./LanguageSwitcher";
 
-const feelings = ["Anxious", "Low", "Frustrated", "Ashamed", "Overwhelmed", "Neutral"];
-const actions = ["Avoid the task", "Overthink", "Procrastinate", "Work harder than needed", "Shut down", "Nothing changes"];
+const RAW_FEELINGS = ["Anxious", "Low", "Frustrated", "Ashamed", "Overwhelmed", "Neutral"];
+const RAW_ACTIONS = ["Avoid the task", "Overthink", "Procrastinate", "Work harder than needed", "Shut down", "Nothing changes"];
 
 const fadeVariants = {
   initial: { opacity: 0, y: 30, scale: 0.98 },
@@ -30,13 +32,12 @@ const ProgressDots = ({ current, total }: { current: number; total: number }) =>
           opacity: i <= current ? 1 : 0.3,
         }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className={`h-2 rounded-full ${
-          i === current
-            ? "bg-primary"
-            : i < current
+        className={`h-2 rounded-full ${i === current
+          ? "bg-primary"
+          : i < current
             ? "bg-pastel-lavender"
             : "bg-border"
-        }`}
+          }`}
       />
     ))}
   </div>
@@ -63,11 +64,10 @@ const ChipSelect = ({
         whileHover={{ scale: 1.04 }}
         whileTap={{ scale: 0.97 }}
         onClick={() => onToggle(opt)}
-        className={`px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-300 border-2 ${
-          selected.includes(opt)
-            ? "bg-primary text-primary-foreground border-primary shadow-md"
-            : "bg-card text-foreground border-border hover:border-pastel-lavender hover:bg-pastel-blue/30"
-        }`}
+        className={`px-4 py-2.5 rounded-full text-sm font-medium transition-all duration-300 border-2 ${selected.includes(opt)
+          ? "bg-primary text-primary-foreground border-primary shadow-md"
+          : "bg-card text-foreground border-border hover:border-pastel-lavender hover:bg-pastel-blue/30"
+          }`}
       >
         {opt}
       </motion.button>
@@ -88,11 +88,10 @@ const CTAButton = ({ onClick, disabled, children, variant = "primary" }: { onCli
     whileTap={{ scale: 0.98 }}
     onClick={onClick}
     disabled={disabled}
-    className={`w-full py-4 rounded-2xl font-medium text-base transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
-      variant === "primary"
-        ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30"
-        : "bg-pastel-lavender text-secondary-foreground hover:bg-pastel-blue"
-    }`}
+    className={`w-full py-4 rounded-2xl font-medium text-base transition-all disabled:opacity-40 disabled:cursor-not-allowed ${variant === "primary"
+      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30"
+      : "bg-pastel-lavender text-secondary-foreground hover:bg-pastel-blue"
+      }`}
   >
     {children}
   </motion.button>
@@ -163,6 +162,15 @@ export default function MindfulActivity() {
   const [reframe, setReframe] = useState("");
   const [finished, setFinished] = useState(false);
 
+  const { translate, locale } = useTranslation();
+  const [feelings, setFeelings] = useState(RAW_FEELINGS);
+  const [actions, setActions] = useState(RAW_ACTIONS);
+
+  useEffect(() => {
+    Promise.all(RAW_FEELINGS.map(f => translate(f))).then(setFeelings);
+    Promise.all(RAW_ACTIONS.map(a => translate(a))).then(setActions);
+  }, [locale, translate]);
+
   const toggle = (list: string[], item: string) =>
     list.includes(item) ? list.filter((i) => i !== item) : [...list, item];
 
@@ -182,6 +190,7 @@ export default function MindfulActivity() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-12">
+      <LanguageSwitcher />
       <div className="w-full max-w-lg">
         <ProgressDots current={screen} total={5} />
 
@@ -192,50 +201,50 @@ export default function MindfulActivity() {
               <DecorativeBlobs variant={0} />
               <div className="relative bg-card/70 backdrop-blur-sm rounded-3xl p-8 border border-border/50 shadow-sm space-y-6">
                 <h1 className="text-3xl md:text-4xl font-heading text-foreground leading-tight">
-                  Notice → Understand → Reframe
+                  <T>Notice → Understand → Reframe</T>
                 </h1>
                 <motion.div variants={staggerChildren} initial="initial" animate="animate" className="space-y-4 text-foreground/80 leading-relaxed text-[15px]">
                   <motion.p variants={childFade}>
-                    Sometimes it's not just a situation that affects us —<br />
-                    it's the thought we have about it.
+                    <T>Sometimes it's not just a situation that affects us —</T><br />
+                    <T>it's the thought we have about it.</T>
                   </motion.p>
-                  <motion.p variants={childFade}>Our thoughts can quietly influence:</motion.p>
+                  <motion.p variants={childFade}><T>Our thoughts can quietly influence:</T></motion.p>
                   <motion.ul variants={childFade} className="space-y-2 ml-1">
                     <li className="flex items-center gap-3">
-                      <span className="w-2 h-2 rounded-full bg-pastel-blue flex-shrink-0" />How we feel
+                      <span className="w-2 h-2 rounded-full bg-pastel-blue flex-shrink-0" /><T>How we feel</T>
                     </li>
                     <li className="flex items-center gap-3">
-                      <span className="w-2 h-2 rounded-full bg-pastel-lavender flex-shrink-0" />What we do next
+                      <span className="w-2 h-2 rounded-full bg-pastel-lavender flex-shrink-0" /><T>What we do next</T>
                     </li>
                     <li className="flex items-center gap-3">
-                      <span className="w-2 h-2 rounded-full bg-pastel-mint flex-shrink-0" />Whether we avoid or take action
+                      <span className="w-2 h-2 rounded-full bg-pastel-mint flex-shrink-0" /><T>Whether we avoid or take action</T>
                     </li>
                   </motion.ul>
-                  <motion.p variants={childFade}>This short activity will help you:</motion.p>
+                  <motion.p variants={childFade}><T>This short activity will help you:</T></motion.p>
                   <motion.div variants={childFade} className="space-y-2 ml-1">
                     <div className="flex items-center gap-3">
                       <span className="w-6 h-6 rounded-full bg-pastel-blue/60 flex items-center justify-center text-xs font-semibold text-primary">1</span>
-                      Notice one thought
+                      <T>Notice one thought</T>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="w-6 h-6 rounded-full bg-pastel-lavender/60 flex items-center justify-center text-xs font-semibold text-primary">2</span>
-                      Understand how it affects you
+                      <T>Understand how it affects you</T>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="w-6 h-6 rounded-full bg-pastel-mint/60 flex items-center justify-center text-xs font-semibold text-primary">3</span>
-                      Adjust it in a balanced way
+                      <T>Adjust it in a balanced way</T>
                     </div>
                   </motion.div>
                   <motion.p variants={childFade} className="italic text-muted-foreground border-l-2 border-pastel-lavender pl-4">
-                    This is not about forcing positivity.<br />
-                    It's about gaining clarity and choice.
+                    <T>This is not about forcing positivity.</T><br />
+                    <T>It's about gaining clarity and choice.</T>
                   </motion.p>
                   <motion.p variants={childFade} className="text-sm text-muted-foreground">
-                    Time required: 4–6 minutes<br />
-                    There are no right or wrong answers.
+                    <T>Time required: 4–6 minutes</T><br />
+                    <T>There are no right or wrong answers.</T>
                   </motion.p>
                 </motion.div>
-                <CTAButton onClick={next}>Start</CTAButton>
+                <CTAButton onClick={next}><T>Start</T></CTAButton>
               </div>
             </motion.div>
           )}
@@ -245,15 +254,15 @@ export default function MindfulActivity() {
             <motion.div key="s1" {...fadeVariants} className="relative">
               <DecorativeBlobs variant={1} />
               <div className="relative bg-card/70 backdrop-blur-sm rounded-3xl p-8 border border-border/50 shadow-sm space-y-6">
-                <h1 className="text-3xl font-heading text-foreground">What's the Thought?</h1>
+                <h1 className="text-3xl font-heading text-foreground"><T>What's the Thought?</T></h1>
                 <div className="space-y-4 text-foreground/80 leading-relaxed text-[15px]">
-                  <p>Think of one thought that has been bothering you lately.</p>
+                  <p><T>Think of one thought that has been bothering you lately.</T></p>
                   <p>
-                    It could be self-critical.<br />
-                    It could feel overwhelming.<br />
-                    It might feel completely true.
+                    <T>It could be self-critical.</T><br />
+                    <T>It could feel overwhelming.</T><br />
+                    <T>It might feel completely true.</T>
                   </p>
-                  <p>Write it in one sentence.</p>
+                  <p><T>Write it in one sentence.</T></p>
                 </div>
                 <div className="space-y-2">
                   <input
@@ -263,9 +272,9 @@ export default function MindfulActivity() {
                     placeholder="I'm always behind."
                     className="w-full px-5 py-4 rounded-2xl border-2 border-border bg-background text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 text-[15px] transition-all"
                   />
-                  <p className="text-xs text-muted-foreground ml-2">Just notice it. No judgment.</p>
+                  <p className="text-xs text-muted-foreground ml-2"><T>Just notice it. No judgment.</T></p>
                 </div>
-                <CTAButton onClick={next} disabled={!thought.trim()}>Continue</CTAButton>
+                <CTAButton onClick={next} disabled={!thought.trim()}><T>Continue</T></CTAButton>
               </div>
             </motion.div>
           )}
@@ -275,10 +284,10 @@ export default function MindfulActivity() {
             <motion.div key="s2" {...fadeVariants} className="relative">
               <DecorativeBlobs variant={2} />
               <div className="relative bg-card/70 backdrop-blur-sm rounded-3xl p-8 border border-border/50 shadow-sm space-y-6">
-                <h1 className="text-3xl font-heading text-foreground">How Does This Thought Affect You?</h1>
-                <p className="text-foreground/80 text-[15px]">When you think this thought:</p>
+                <h1 className="text-3xl font-heading text-foreground"><T>How Does This Thought Affect You?</T></h1>
+                <p className="text-foreground/80 text-[15px]"><T>When you think this thought:</T></p>
                 <div className="space-y-3">
-                  <p className="text-sm font-medium text-foreground">How do you usually feel?</p>
+                  <p className="text-sm font-medium text-foreground"><T>How do you usually feel?</T></p>
                   <ChipSelect
                     options={feelings}
                     selected={selectedFeelings}
@@ -288,7 +297,7 @@ export default function MindfulActivity() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <p className="text-sm font-medium text-foreground">What do you usually do next?</p>
+                  <p className="text-sm font-medium text-foreground"><T>What do you usually do next?</T></p>
                   <ChipSelect
                     options={actions}
                     selected={selectedActions}
@@ -298,13 +307,13 @@ export default function MindfulActivity() {
                   />
                 </div>
                 <div className="bg-pastel-blue/30 rounded-2xl p-5 space-y-1.5 border border-pastel-blue/40">
-                  <p className="text-sm font-medium text-accent-foreground">Thought → Feeling → Action</p>
+                  <p className="text-sm font-medium text-accent-foreground"><T>Thought → Feeling → Action</T></p>
                   <p className="text-xs text-muted-foreground">
-                    This pattern often happens automatically.<br />
-                    Awareness creates space.
+                    <T>This pattern often happens automatically.</T><br />
+                    <T>Awareness creates space.</T>
                   </p>
                 </div>
-                <CTAButton onClick={next} disabled={selectedFeelings.length === 0 && !feelingOther}>Continue</CTAButton>
+                <CTAButton onClick={next} disabled={selectedFeelings.length === 0 && !feelingOther}><T>Continue</T></CTAButton>
               </div>
             </motion.div>
           )}
@@ -314,17 +323,17 @@ export default function MindfulActivity() {
             <motion.div key="s3" {...fadeVariants} className="relative">
               <DecorativeBlobs variant={3} />
               <div className="relative bg-card/70 backdrop-blur-sm rounded-3xl p-8 border border-border/50 shadow-sm space-y-6">
-                <h1 className="text-3xl font-heading text-foreground">What Supports This Thought?</h1>
+                <h1 className="text-3xl font-heading text-foreground"><T>What Supports This Thought?</T></h1>
                 <div className="space-y-4 text-foreground/80 leading-relaxed text-[15px]">
-                  <p>Sometimes our thoughts feel completely true.</p>
-                  <p>Before adjusting it, take a moment to look at the evidence.</p>
-                  <p>Ask yourself:</p>
+                  <p><T>Sometimes our thoughts feel completely true.</T></p>
+                  <p><T>Before adjusting it, take a moment to look at the evidence.</T></p>
+                  <p><T>Ask yourself:</T></p>
                   <p className="italic text-foreground/70 border-l-2 border-pastel-peach pl-4">
-                    What experiences, facts, or memories make this thought feel valid?
+                    <T>What experiences, facts, or memories make this thought feel valid?</T>
                   </p>
                   <p>
-                    You don't need to prove it wrong.<br />
-                    Just gently explore what supports it.
+                    <T>You don't need to prove it wrong.</T><br />
+                    <T>Just gently explore what supports it.</T>
                   </p>
                 </div>
                 <div className="space-y-2">
@@ -335,14 +344,14 @@ export default function MindfulActivity() {
                     placeholder="e.g. I missed two deadlines last month."
                     className="w-full px-5 py-4 rounded-2xl border-2 border-border bg-background text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 text-[15px] transition-all"
                   />
-                  <p className="text-xs text-muted-foreground ml-2">Be specific. Even small examples count.</p>
+                  <p className="text-xs text-muted-foreground ml-2"><T>Be specific. Even small examples count.</T></p>
                 </div>
                 <div className="bg-pastel-peach/30 rounded-2xl p-4 border border-pastel-peach/40">
                   <p className="text-xs text-muted-foreground">
-                    Looking at evidence helps you step back from automatic conclusions.
+                    <T>Looking at evidence helps you step back from automatic conclusions.</T>
                   </p>
                 </div>
-                <CTAButton onClick={next} disabled={!evidence.trim()}>Reframe</CTAButton>
+                <CTAButton onClick={next} disabled={!evidence.trim()}><T>Reframe</T></CTAButton>
               </div>
             </motion.div>
           )}
@@ -353,23 +362,23 @@ export default function MindfulActivity() {
               <DecorativeBlobs variant={4} />
               {!finished ? (
                 <div className="relative bg-card/70 backdrop-blur-sm rounded-3xl p-8 border border-border/50 shadow-sm space-y-6">
-                  <h1 className="text-3xl font-heading text-foreground">Adjust the Thought</h1>
+                  <h1 className="text-3xl font-heading text-foreground"><T>Adjust the Thought</T></h1>
                   <div className="space-y-3 text-foreground/80 leading-relaxed text-[15px]">
-                    <p>Now that you see how this thought affects you — and what supports it — try rewriting it in a more balanced way.</p>
+                    <p><T>Now that you see how this thought affects you — and what supports it — try rewriting it in a more balanced way.</T></p>
                     <p>
-                      Not overly positive.<br />
-                      Just realistic and fair.
+                      <T>Not overly positive.</T><br />
+                      <T>Just realistic and fair.</T>
                     </p>
-                    <p>A balanced thought often:</p>
+                    <p><T>A balanced thought often:</T></p>
                     <ul className="space-y-2 ml-1">
                       <li className="flex items-center gap-3">
-                        <span className="w-2 h-2 rounded-full bg-pastel-blue flex-shrink-0" />Acknowledges what's true
+                        <span className="w-2 h-2 rounded-full bg-pastel-blue flex-shrink-0" /><T>Acknowledges what's true</T>
                       </li>
                       <li className="flex items-center gap-3">
-                        <span className="w-2 h-2 rounded-full bg-pastel-lavender flex-shrink-0" />Leaves room for flexibility
+                        <span className="w-2 h-2 rounded-full bg-pastel-lavender flex-shrink-0" /><T>Leaves room for flexibility</T>
                       </li>
                       <li className="flex items-center gap-3">
-                        <span className="w-2 h-2 rounded-full bg-pastel-mint flex-shrink-0" />Reduces harsh language like "always" or "never"
+                        <span className="w-2 h-2 rounded-full bg-pastel-mint flex-shrink-0" /><T>Reduces harsh language like "always" or "never"</T>
                       </li>
                     </ul>
                   </div>
@@ -382,11 +391,11 @@ export default function MindfulActivity() {
                       className="w-full px-5 py-4 rounded-2xl border-2 border-border bg-background text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40 text-[15px] transition-all"
                     />
                     <p className="text-xs text-muted-foreground ml-2">
-                      Instead of: "I always mess up."<br />
-                      Try: "I made a mistake, but I can correct it."
+                      <T>Instead of: "I always mess up."</T><br />
+                      <T>Try: "I made a mistake, but I can correct it."</T>
                     </p>
                   </div>
-                  <CTAButton onClick={() => setFinished(true)} disabled={!reframe.trim()}>Submit</CTAButton>
+                  <CTAButton onClick={() => setFinished(true)} disabled={!reframe.trim()}><T>Submit</T></CTAButton>
                 </div>
               ) : (
                 <motion.div
@@ -429,7 +438,7 @@ export default function MindfulActivity() {
                         transition={{ delay: 0.4 }}
                         className="text-center text-muted-foreground italic text-[15px]"
                       >
-                        Take a slow breath before you leave this screen.
+                        <T>Take a slow breath before you leave this screen.</T>
                       </motion.p>
 
                       <motion.div
@@ -439,12 +448,12 @@ export default function MindfulActivity() {
                         className="space-y-4 text-foreground/80 leading-relaxed text-[15px]"
                       >
                         <motion.p variants={childFade}>
-                          The thought you wrote down may still exist — and that's okay.<br />
-                          The goal was never to eliminate it.
+                          <T>The thought you wrote down may still exist — and that's okay.</T><br />
+                          <T>The goal was never to eliminate it.</T>
                         </motion.p>
 
                         <motion.p variants={childFade} className="font-medium text-foreground text-base">
-                          What you just practiced is something powerful:
+                          <T>What you just practiced is something powerful:</T>
                         </motion.p>
 
                         <motion.div variants={childFade} className="space-y-3 py-2">
@@ -463,7 +472,7 @@ export default function MindfulActivity() {
                               className="flex items-start gap-3"
                             >
                               <span className={`w-3 h-3 rounded-full ${color} flex-shrink-0 mt-1`} />
-                              <span>{text}</span>
+                              <span><T>{text}</T></span>
                             </motion.div>
                           ))}
                         </motion.div>
@@ -474,9 +483,9 @@ export default function MindfulActivity() {
                           transition={{ delay: 1.8 }}
                           className="bg-pastel-blue/20 rounded-2xl p-5 border border-pastel-blue/30 space-y-3"
                         >
-                          <p className="font-medium text-foreground">That creates space.</p>
+                          <p className="font-medium text-foreground"><T>That creates space.</T></p>
                           <p className="text-sm">
-                            Over time, even small moments of awareness like this can reduce overthinking, soften self-criticism, and make actions feel more manageable.
+                            <T>Over time, even small moments of awareness like this can reduce overthinking, soften self-criticism, and make actions feel more manageable.</T>
                           </p>
                         </motion.div>
 
@@ -487,10 +496,10 @@ export default function MindfulActivity() {
                           className="text-center space-y-2 pt-2"
                         >
                           <p>
-                            You don't have to change every thought.<br />
-                            You only need to notice them — one at a time.
+                            <T>You don't have to change every thought.</T><br />
+                            <T>You only need to notice them — one at a time.</T>
                           </p>
-                          <p className="text-xl font-heading text-primary">You did that today.</p>
+                          <p className="text-xl font-heading text-primary"><T>You did that today.</T></p>
                         </motion.div>
                       </motion.div>
 
@@ -499,7 +508,7 @@ export default function MindfulActivity() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 2.6 }}
                       >
-                        <CTAButton onClick={reset} variant="soft">Finish</CTAButton>
+                        <CTAButton onClick={reset} variant="soft"><T>Finish</T></CTAButton>
                       </motion.div>
                     </div>
                   </div>

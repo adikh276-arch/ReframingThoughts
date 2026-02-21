@@ -7,6 +7,10 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
+# Accept build arguments
+ARG VITE_LINGODOTDEV_API_KEY
+ENV VITE_LINGODOTDEV_API_KEY=$VITE_LINGODOTDEV_API_KEY
+
 # Copy source code and build
 COPY . .
 RUN npm run build
